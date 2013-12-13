@@ -15,22 +15,49 @@
     span.s2 {font: 12.0px STSong}
     span.s3 {font: 12.0px Courier}
     span.s4 {text-decoration: underline ; color: #0000ee}
-    
-    .head_area{
+
+  
+
+#head_area{
+        width:100%;
+        background: #212121;
+        background: -moz-linear-gradient(top, #373737, #212121);
+        background: -webkit-linear-gradient(top, #373737, #212121);
+        background: -ms-linear-gradient(top, #373737, #212121);
+        background: -o-linear-gradient(top, #373737, #212121);
+        background: linear-gradient(top, #373737, #212121);
         
-        
     }
-    .body_area {
+#head_box{
+      padding: 50px 10px 30px 10px;
+  }
+#head_title {
+      margin: 0;
+      color: #fff;
+      font-size: 42px;
+      font-weight: 700;
+      text-shadow: #111 0px 0px 10px;
+    }
+  
+#head_tagline {
+      color: #fff;
+      font-size: 24px;
+      font-weight: 300;
+      background: none;
+      text-shadow: #111 0px 0px 10px;
+     }
+#body_area {
         float:left;
-        width:70%;
+        width:65%;
     }
-    .right_area {
-        float:left;
-         width:30%;
-         text-align:right
+#right_area {
+         padding: 2px 0px 2px 0px;
+         float:left;
+         width:35%;
+         text-align:left
     }
-  .weibo {
-      float:right;
+#weibo {
+      float:left;
       width:351px;
       height:551px;
       text-align:right;
@@ -40,12 +67,14 @@
 </head>
 
 <body>
-<div class="head_area">
-    <h1 style="margin: 0.0px 0.0px 16.0px 0.0px; font: 24.0px Times"><b>Abingsky37.github.com</b></h1>
-    <h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px STSong">欢迎来到我的主页</h3>
+<div id="head_area">
+    <div id="head_box">
+    <h1 id="head_title"><b>Abingsky37.github.com</b></h1>
+    <h3 id="head_tagline">欢迎来到我的主页</h3>
+    </div>
 </div>
 
-<div class="body_area">
+<div id="body_area">
 
     <p class="p6"><br></p>
     <h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times"><b>Blogs</b></h3>
@@ -59,10 +88,12 @@
 
 
 <div id="right_area">
+    <br>
+    <h3 style="margin: 0.0px 0.0px 14.0px 0.0px; font: 14.0px Times"><b>About me</b></h3>
     <p class="p4">
-    我的一些介绍：<br>
-    码农@杭州，在杭快8年了。<br>
-    微博: <a href="http://weibo.com/abing37"> abingsky37 </a>
+    码农@杭州，work@阿里巴巴，在杭快8年了。<br>
+    微博: <a href="http://weibo.com/abing37"> abingsky37 </a><br>
+    邮箱: linyubing@gmail.com
     </p>
     <div class="weibo">
     <iframe width="350" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1746427512&verifier=4b318246&dpc=1"></iframe>
