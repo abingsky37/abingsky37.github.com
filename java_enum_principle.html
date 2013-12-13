@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { font-weight: bold; }
+code > span.dt { text-decoration: underline; }
+code > span.co { font-style: italic; }
+code > span.al { font-weight: bold; }
+code > span.er { font-weight: bold; }
+  </style>
+</head>
+<body>
+<p><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> <link rel="stylesheet" href="http://yandex.st/highlightjs/6.2/styles/googlecode.min.css"></p>
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+ 
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript">
+ $(document).ready(function(){
+      $("h3,h4,h5,h6,h7").each(function(i,item){
+        var tag = $(item).get(0).localName;
+        $(item).attr("id","wow"+i);
+        $("#category").append('<a class="new'+tag+'" href="#wow'+i+'">'+$(this).text()+'</a></br>');
+        $(".newh2").css("margin-left",0);
+        $(".newh3").css("margin-left",20);
+        $(".newh4").css("margin-left",40);
+        $(".newh5").css("margin-left",60);
+        $(".newh6").css("margin-left",80);
+      });
+ });
+</script>
+
+
+<h2 id="java-enum-基本原理">Java Enum 基本原理</h2>
+<hr />
+<div id="category">
+
+</div>
+<h3 id="关于-java-enum">1. 关于 Java Enum</h3>
+<p>学过 C/C++ 等语言的人，应该都对 Enum 类型略知一二。 Enum 一般用来表示一组相同类型可列举的常量。如性别、日期、月份、颜色等。对这些属性用常量的好处是显而易见的，不仅可以保证单例，且比较时候可以用 ”==” 来替换 equals 。是一种好的方式。 JDK1.5 之前没有 Enum 这个类型，那时候一般用接口常量来替代。有了 JavaEnum 之后，可以更贴近的表示这种可列举常量。</p>
+<h3 id="如何使用-java-enum">2. 如何使用 Java Enum</h3>
+<p>简单的用法： JavaEnum 简单的用法一般用于代表一组常用常量，可用来代表一类相同类型的常量值。如：</p>
+<p>性别：</p>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">enum</span> SexEnum {   
+  
+  male , female ;   
+  
+}   </code></pre>
+<p>颜色：</p>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">enum</span> Color {   
+  
+  RED , BLUE,GREEN,BLACK ;   
+  
+}   </code></pre>
+<p>枚举对象里面的值都必须是唯一的。 可以通过 Enum 类型名直接引用该常量，如 SexEnum.male,Color.RED. 复杂用法： Java 为枚举类型提供了一些内置的方法，同事枚举常量还可以有自己的方法。可以很方便的遍历枚举对象，看个下面的例子：</p>
+<p>1.代码一 WeekDay.java :</p>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="co">/** </span>
+<span class="co"> * </span><span class="kw">@author </span><span class="co">singleAnt </span>
+<span class="co"> * 2009.7.29 </span>
+<span class="co"> * 定义一个枚举类型，代表星期一到星期日的7个缩写常量 </span>
+<span class="co"> * 同时还定义了枚举类型的属性day，该属性可以是final,也可是变量 </span>
+<span class="co"> * 同时还定义了该枚举类型的一个方法printDay </span>
+<span class="co"> */</span>  
+<span class="kw">public</span> <span class="kw">enum</span> WeekDay {  
+<span class="fu">Mon</span>(<span class="st">&quot;Monday&quot;</span>), <span class="fu">Tue</span>(<span class="st">&quot;Tuesday&quot;</span>), <span class="fu">Wed</span>(<span class="st">&quot;Wednesday&quot;</span>), <span class="fu">Thu</span>(<span class="st">&quot;Thursday&quot;</span>), <span class="fu">Fri</span>(  
+        <span class="st">&quot;Friday&quot;</span>), <span class="fu">Sat</span>(<span class="st">&quot;Saturday&quot;</span>), <span class="fu">Sun</span>(<span class="st">&quot;Sunday&quot;</span>);  
+  
+<span class="co">/**定义枚举类型自己的属性**/</span>  
+<span class="kw">private</span> <span class="dt">final</span> String day;  
+   
+<span class="kw">private</span> <span class="fu">WeekDay</span>(String day) {  
+     <span class="kw">this</span>.<span class="fu">day</span> = day;  
+}  
+  
+<span class="co">/**定义枚举类型自己的方法**/</span>  
+<span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">printDay</span>(<span class="dt">int</span> i){  
+     <span class="kw">switch</span>(i){  
+     <span class="kw">case</span> <span class="dv">1</span>: System.<span class="fu">out</span>.<span class="fu">println</span>(WeekDay.<span class="fu">Mon</span>); <span class="kw">break</span>;  
+     <span class="kw">case</span> <span class="dv">2</span>: System.<span class="fu">out</span>.<span class="fu">println</span>(WeekDay.<span class="fu">Tue</span>);<span class="kw">break</span>;  
+     <span class="kw">case</span> <span class="dv">3</span>: System.<span class="fu">out</span>.<span class="fu">println</span>(WeekDay.<span class="fu">Wed</span>);<span class="kw">break</span>;  
+     <span class="kw">case</span> <span class="dv">4</span>: System.<span class="fu">out</span>.<span class="fu">println</span>(WeekDay.<span class="fu">Thu</span>);<span class="kw">break</span>;  
+     <span class="kw">case</span> <span class="dv">5</span>: System.<span class="fu">out</span>.<span class="fu">println</span>(WeekDay.<span class="fu">Fri</span>);<span class="kw">break</span>;  
+     <span class="kw">case</span> <span class="dv">6</span>: System.<span class="fu">out</span>.<span class="fu">println</span>(WeekDay.<span class="fu">Sat</span>);<span class="kw">break</span>;  
+     <span class="kw">case</span> <span class="dv">7</span>: System.<span class="fu">out</span>.<span class="fu">println</span>(WeekDay.<span class="fu">Sun</span>);<span class="kw">break</span>;  
+     <span class="kw">default</span>:System.<span class="fu">out</span>.<span class="fu">println</span>(<span class="st">&quot;wrong number!&quot;</span>);  
+     }  
+}  
+   
+<span class="kw">public</span> String <span class="fu">getDay</span>() {  
+     <span class="kw">return</span> day;  
+}  
+}  </code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>代码二 WeekDayTest.java:</li>
+</ol>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="co">/** </span>
+<span class="co"> * </span><span class="kw">@author </span><span class="co">singleAnt </span>
+<span class="co"> * 2009.7.29 </span>
+<span class="co"> * 测试枚举类型WeekDay. </span>
+<span class="co"> */</span>  
+<span class="kw">public</span> <span class="kw">class</span> WeekDayTest {  
+  <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span>(String args[]) {  
+      <span class="kw">for</span> (WeekDay day : WeekDay.<span class="fu">values</span>()) {  
+         System.<span class="fu">out</span>.<span class="fu">println</span>(day + <span class="st">&quot;====&gt;&quot;</span> + day.<span class="fu">getDay</span>());  
+      }  
+      WeekDay.<span class="fu">printDay</span>(<span class="dv">5</span>);  
+  }  
+}  </code></pre>
+<p>输出结果为：</p>
+<pre><code>Mon====&gt;Monday
+Tue====&gt;Tuesday
+Wed====&gt;Wednesday
+Thu====&gt;Thursday
+Fri====&gt;Friday
+Sat====&gt;Saturday
+Sun====&gt;Sunday
+Fri</code></pre>
+<h3 id="java-enum-原理">3. Java Enum 原理</h3>
+<p>Java Enum 类型的语法结构尽管和 java 类的语法不一样，应该说差别比较大。但是经过编译器编译之后产生的是一个 class 文件。该 class 文件经过反编译可以看到实际上是生成了一个类，该类继承了 java.lang.Enum<E>. WeekDay (javap WeekDay 命令 之后得到的内容如下 ( 去掉了部分指令代码 ) ：</p>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">final</span> <span class="kw">class</span> WeekDay <span class="kw">extends</span> java.<span class="fu">lang</span>.<span class="fu">Enum</span>{  
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> WeekDay Mon;  
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> WeekDay Tue;  
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> WeekDay Wed;  
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> WeekDay Thu;  
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> WeekDay Fri;  
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> WeekDay Sat;  
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> WeekDay Sun;  
+    <span class="dt">static</span> {};  
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">printDay</span>(<span class="dt">int</span>);  
+    <span class="kw">public</span> java.<span class="fu">lang</span>.<span class="fu">String</span> <span class="fu">getDay</span>();  
+    <span class="kw">public</span> <span class="dt">static</span> WeekDay[] <span class="fu">values</span>();  
+    <span class="kw">public</span> <span class="dt">static</span> WeekDay <span class="fu">valueOf</span>(java.<span class="fu">lang</span>.<span class="fu">String</span>);  
+}  </code></pre>
+<p>所以实际上 Enum 类型就是以 Java 类来实现的，没有什么新的特点，只不过 java 编译器帮我们做了语法的解析和编译，可以认为是一个语法糖，完全也可以自己实现。</p>
+</body>
+</html>
