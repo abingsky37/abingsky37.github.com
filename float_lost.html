@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>
+      浮点数精度为什么会丢失(Java为例)
+  </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="description" content="浮点数精度为什么会丢失(Java为例) " />
+  <meta name="keywords" content="java,float,double,浮点数,精度丢失" />
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #2a211c; color: #bdae9d; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #2a211c; color: #bdae9d; border-right: 1px solid #bdae9d; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #bdae9d; background-color: #2a211c; }
+code > span.kw { color: #43a8ed; font-weight: bold; }
+code > span.dt { text-decoration: underline; }
+code > span.dv { color: #44aa43; }
+code > span.bn { color: #44aa43; }
+code > span.fl { color: #44aa43; }
+code > span.ch { color: #049b0a; }
+code > span.st { color: #049b0a; }
+code > span.co { color: #0066ff; font-style: italic; }
+code > span.al { color: #ffff00; }
+code > span.fu { color: #ff9358; font-weight: bold; }
+code > span.er { font-weight: bold; }
+  </style>
+</head>
+<body>
+<p><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/></p>
+<p><a href="http://abingsky37.github.io">回主页</a></p>
+<h2 id="浮点数精度为什么会丢失java为例">浮点数精度为什么会丢失（java为例）</h2>
+<hr />
+<p>由于对float或double 的使用不当，可能会出现精度丢失的问题。问题看如下代码理解:</p>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">class</span> FloatDoubleTest {    
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span>(String[] args) {    
+    <span class="dt">float</span> f = <span class="dv">20014999</span>;    
+    <span class="dt">double</span> d = f;    
+    <span class="dt">double</span> d2 = <span class="dv">20014999</span>;    
+    System.<span class="fu">out</span>.<span class="fu">println</span>(<span class="st">&quot;f=&quot;</span> + f);    
+    System.<span class="fu">out</span>.<span class="fu">println</span>(<span class="st">&quot;d=&quot;</span> + d);    
+    System.<span class="fu">out</span>.<span class="fu">println</span>(<span class="st">&quot;d2=&quot;</span> + d2);    
+    }    
+}</code></pre>
+<p>得到的结果如下：</p>
+<pre><code>f=2.0015E7
+d=2.0015E7
+d2=2.0014999E7</code></pre>
+<p>从输出结果可以看出double 可以正确的表示20014999 ，而float 没有办法表示20014999 ，得到的只是一个近似值。这样的结果很让人讶异。20014999 这么小的数字在float下没办法表示。带着这个问题，一起学习一下浮点数，做个简单分享，希望有助于大家对java 浮点数的理解。</p>
+<h3 id="java-的-float-和-double-的表示法">1. java 的 float 和 double 的表示法</h3>
+<p>Java 语言支持两种基本的浮点类型： float 和 double 。java 的浮点类型都依据 IEEE 754 标准。IEEE 754 定义了32 位和 64 位双精度两种浮点二进制小数标准。</p>
+<p>IEEE 754 用科学记数法以底数为 2 的小数来表示浮点数。</p>
+<p>对于32 位浮点数float用 第1 位表示数字的符号，用第2至9位来表示指数，用 最后23 位来表示尾数，即小数部分。</p>
+<p>float(32位):</p>
+<div class="figure">
+<img src="images/float.jpg" alt="flota" /><p class="caption">flota</p>
+</div>
+<p>对于64 位双精度浮点数，用 第1 位表示数字的符号，用 11 位表示指数，52 位表示尾数。</p>
+<p>double(64位):</p>
+<div class="figure">
+<img src="images/double.jpg" alt="double" /><p class="caption">double</p>
+</div>
+<p>(1)一个单独的符号位s 直接编码符号s 。</p>
+<p>(2)k 位的幂指数E ，移码表示 。</p>
+<p>(3)n 位的小数，原码表示 。</p>
+<h3 id="什么时候会出现无法表示">2. 什么时候会出现无法表示？</h3>
+<p>任何一个浮点数字，在底层表示都必须转换成这种科学计数法来表示，那么我们来想想看什么时候这个数字会无法表示呢？那么只有两种情形：</p>
+<ol style="list-style-type: decimal">
+<li><p>幂数不够表示了：这种情况往往出现在数字太大了，超过幂数所能承受的范围，那么这个数字就无法表示了。如幂数最大只能是10，但是这个数字用科学计数法表示时，幂数一定会超过10，就没办法了。</p></li>
+<li><p>尾数不够表示了：这种情况往往出现在数字精度太长了，如1.3434343233332这样的数字，虽然很小，还不超过2，这种情况下幂数完全满足要求，但是尾数已经不能表示出来了这么长的精度。</p></li>
+</ol>
+<h3 id="为什么用-float-没有办法正确表示">3. 20014999 为什么用 float 没有办法正确表示？</h3>
+<p>通过以上分析，应该已经知道，这个数字不大，转换成IEEE754科学计数法之后幂数一定是满足要求的，只是尾数不能表示这么精确的数字了，属于第二种情况。</p>
+<p><font color="red">由于float尾数是23位，根据IEEE754的表示法，只要大于16777216（2的24次方）的奇数都无法表示。</font></p>
+<p>所以结合 float和double的表示方法，通过分析 20014999 的二进制表示就可以知道答案了。</p>
+<p>以下程序可以得出 20014999 在 double 和 float 下的二进制表示方式。</p>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">class</span> FloatDoubleTest3 {     
+<span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span>(String[] args) {      
+<span class="dt">double</span> d = <span class="dv">20014999</span>;      
+<span class="dt">long</span> l = Double.<span class="fu">doubleToLongBits</span>(d);      
+System.<span class="fu">out</span>.<span class="fu">println</span>(Long.<span class="fu">toBinaryString</span>(l));      
+<span class="dt">float</span> f = <span class="dv">20014999</span>;     
+<span class="dt">int</span> i = Float.<span class="fu">floatToIntBits</span>(f);     
+System.<span class="fu">out</span>.<span class="fu">println</span>(Integer.<span class="fu">toBinaryString</span>(i));      
+}      
+}</code></pre>
+<p>输出结果如下：</p>
+<p>Double:100000101110011000101100111100101110000000000000000000000000000</p>
+<p>Float:1001011100110001011001111001100</p>
+<p>对于输出结果分析如下。对于 double 的二进制左边补上符号位 0 刚好可以得到 64 位的二进制数。根据double的表示法，分为符号数、幂指数和尾数三个部分如下：</p>
+<p>0 <font color="red">10000010111</font> <font color="blue">0011000101100111100101110000000000000000000000000000</font></p>
+<p>对于 float 左边补上符号位 0 刚好可以得到 32 位的二进制数。 根据float的表示法， 也分为 符号数、幂指数和尾数三个部分如下 ：</p>
+<p>0 <font color="red">10010111</font> <font color="blue">00110001011001111001100</font></p>
+<p>第一部分是符号位，第二部分是幂指数，第三部分是尾数。</p>
+<p>对比可以得出:</p>
+<p>符号位都是 0，一样。</p>
+<p>幂指数为移码表示,两者刚好也相等。</p>
+<p>唯一不同的是尾数。</p>
+<p>在 double 的尾数为： 001100010110011110010111 0000000000000000000000000000 ，省略后面的零，至少需要24位才能正确表示 。</p>
+<p>而在 float 下面尾数为： 00110001011001111001100 ，共 23 位。</p>
+<p>为什么会这样？原因很明显，因为 float 尾数 最多只能表示 23 位，所以 24 位的 001100010110011110010111 在 float 下面经过四舍五入变成了 23 位的 00110001011001111001100 。所以 20014999 在 float 下面变成了 20015000 。</p>
+<p>也就是说 20014999 虽然是在float的表示范围之内，但 在 IEEE 754 的 float 表示法精度长度没有办法表示出 20014999 ，而只能通过四舍五入得到一个近似值。</p>
+<h3 id="总结">总结</h3>
+<p>浮点运算很少是精确的，只要是超过精度能表示的范围就会产生误差。往往产生误差不是因为数的大小，而是因为数的精度。因此，产生的结果接近但不等于想要的结果。尤其在使用 float 和 double 作精确运算的时候要特别小心。</p>
+<p>可以考虑采用一些替代方案来实现。如通过 String 结合 BigDecimal 或者通过使用 long 类型来转换。</p>
+</body>
+</html>
