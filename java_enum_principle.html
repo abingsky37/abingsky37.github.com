@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>Java Enum 基本原理</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
@@ -34,8 +34,8 @@ code > span.er { font-weight: bold; }
 <div id="category">
 
 </div>
-<h3 id="关于-java-enum">1. 关于 Java Enum</h3>
-<p>学过 C/C++ 等语言的人，应该都对 Enum 类型略知一二。 Enum 一般用来表示一组相同类型可列举的常量。如性别、日期、月份、颜色等。对这些属性用常量的好处是显而易见的，不仅可以保证单例，且比较时候可以用 ”==” 来替换 equals 。是一种好的方式。 JDK1.5 之前没有 Enum 这个类型，那时候一般用接口常量来替代。有了 JavaEnum 之后，可以更贴近的表示这种可列举常量。</p>
+<h3 id="关于-java-enum">1. 关于  Enum</h3>
+<p> Enum 一般用来表示一组相同类型可列举的常量。如性别、日期、月份、颜色等。对这些属性用常量的好处是显而易见的，不仅可以保证单例，且比较时候可以用 ”==” 来替换 equals 。是一种好的方式。 JDK1.5 之前没有 Enum 这个类型，那时候一般用接口常量来替代。有了 JavaEnum 之后，可以更贴近的表示这种可列举常量。</p>
 <h3 id="如何使用-java-enum">2. 如何使用 Java Enum</h3>
 <p>简单的用法： JavaEnum 简单的用法一般用于代表一组常用常量，可用来代表一类相同类型的常量值。如：</p>
 <p>性别：</p>

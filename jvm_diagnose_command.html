@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>
+      Jvm常见问题诊断---命令行工具
+  </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="description" content="jam命令行诊断工具 " />
+  <meta name="keywords" content="JVM, Java, SUN, hotspot, OS JVM问题诊断常用命令：jinfo,jmap,jstack,jstat " />
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #2a211c; color: #bdae9d; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #2a211c; color: #bdae9d; border-right: 1px solid #bdae9d; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #bdae9d; background-color: #2a211c; }
+code > span.kw { color: #43a8ed; font-weight: bold; }
+code > span.dt { text-decoration: underline; }
+code > span.dv { color: #44aa43; }
+code > span.bn { color: #44aa43; }
+code > span.fl { color: #44aa43; }
+code > span.ch { color: #049b0a; }
+code > span.st { color: #049b0a; }
+code > span.co { color: #0066ff; font-style: italic; }
+code > span.al { color: #ffff00; }
+code > span.fu { color: #ff9358; font-weight: bold; }
+code > span.er { font-weight: bold; }
+  </style>
+</head>
+
+<body>
+<p><a href="http://abingsky37.github.io">回主页</a></p>
+<h1 id="jvm常见问题诊断---命令行工具">Jvm常见问题诊断---命令行工具</h1>
+<hr />
+<h2 id="jinfo">1.jinfo</h2>
+<ul>
+<li>描述：输出给定 java 进程所有的配置信息。包括 java 系统属性和 jvm 命令行标记等。</li>
+<li>用法：</li>
+</ul>
+<pre class="sourceCode java"><code class="sourceCode java"></code></pre>
+<pre><code>jinfo [ option ] pid
+jinfo [ option ] executable core
+jinfo [ option ] [server-id@]remote-hostname-or-IP</code></pre>
+<ul>
+<li>例子：</li>
+</ul>
+<pre><code>jinfo pid</code></pre>
+<ul>
+<li>示例结果如下：</li>
+</ul>
+<pre><code>JVM version is 14.0-b16  
+  
+Java System Properties:  
+  
+java.runtime.name = Java(TM) SE Runtime Environment  
+  
+sun.boot.library.path = /work/ProgramFiles/jdk1.6.0_14/jre/lib/i386  
+  
+java.vm.version = 14.0-b16  
+  
+java.vm.vendor = Sun Microsystems Inc.  
+  
+java.vendor.url = http://java.sun.com/  
+  
+path.separator = :  
+  
+java.vm.name = Java HotSpot(TM) Server VM  
+  
+file.encoding.pkg = sun.io  
+  
+sun.java.launcher = SUN_STANDARD  
+  
+user.country = CN  
+  
+sun.os.patch.level = unknown  
+  
+java.vm.specification.name = Java Virtual Machine Specification  
+  
+user.dir = /work/RateWorkspace/branches/rate/daemon  
+  
+java.runtime.version = 1.6.0_14-b08  
+  
+java.awt.graphicsenv = sun.awt.X11GraphicsEnvironment  
+  
+java.endorsed.dirs = /work/ProgramFiles/jdk1.6.0_14/jre/lib/endorsed  
+  
+os.arch = i386  
+  
+java.io.tmpdir = /tmp  
+  
+line.separator =   
+      
+java.vm.specification.vendor = Sun Microsystems Inc.  
+  
+os.name = Linux  
+  
+sun.jnu.encoding = UTF-8  
+  
+java.library.path = /work/ProgramFiles/jdk1.6.0_14/jre/lib/i386/server:/work/ProgramFiles/jdk1.6.0_14/jre/lib/i386:/work/ProgramFiles/jdk1.6.0_14/jre/../lib/i386:/usr/lib/jvm/java-6-openjdk/jre/lib/i386/client:/usr/lib/jvm/java-6-openjdk/jre/lib/i386:/usr/lib/xulrunner-addons:/usr/lib/xulrunner-addons:/usr/java/packages/lib/i386:/lib:/usr/lib  
+  
+java.specification.name = Java Platform API Specification  
+  
+java.class.version = 50.0  
+  
+sun.management.compiler = HotSpot Tiered Compilers  
+  
+os.version = 2.6.28-19-generic  
+  
+user.home = /home/yblin  
+  
+user.timezone = PRC  
+  
+java.awt.printerjob = sun.print.PSPrinterJob  
+  
+file.encoding = GBK  
+  
+java.specification.version = 1.6  
+  
+java.class.path =   
+  
+user.name = yblin  
+  
+java.vm.specification.version = 1.0  
+  
+java.home = /work/ProgramFiles/jdk1.6.0_14/jre  
+  
+sun.arch.data.model = 32  
+  
+user.language = zh  
+  
+java.specification.vendor = Sun Microsystems Inc.  
+  
+java.vm.info = mixed mode  
+  
+java.version = 1.6.0_14  
+  
+java.ext.dirs = /work/ProgramFiles/jdk1.6.0_14/jre/lib/ext:/usr/java/packages/lib/ext  
+  
+sun.boot.class.path = /work/ProgramFiles/jdk1.6.0_14/jre/lib/resources.jar:/work/ProgramFiles/jdk1.6.0_14/jre/lib/rt.jar:/work/ProgramFiles/jdk1.6.0_14/jre/lib/sunrsasign.jar:/work/ProgramFiles/jdk1.6.0_14/jre/lib/jsse.jar:/work/ProgramFiles/jdk1.6.0_14/jre/lib/jce.jar:/work/ProgramFiles/jdk1.6.0_14/jre/lib/charsets.jar:/work/ProgramFiles/jdk1.6.0_14/jre/classes  
+  
+java.vendor = Sun Microsystems Inc.  
+  
+file.separator = /  
+  
+java.vendor.url.bug = http://java.sun.com/cgi-bin/bugreport.cgi  
+  
+sun.io.unicode.encoding = UnicodeLittle  
+  
+sun.cpu.endian = little  
+  
+sun.desktop = gnome  
+  
+sun.cpu.isalist =   
+  
+  
+VM Flags:  
+  
+-agentlib:jdwp=transport=dt_socket,suspend=y,address=localhost:55948 -ea -Dfile.encoding=GBK
+  </code></pre>
+<h2 id="jmap">2.jmap</h2>
+<ul>
+<li>描述 ：输出给定 java 进程所有的内存使用信息。了解jvm内存分配和状态比较直观的一个方式。</li>
+<li>使用：</li>
+</ul>
+<pre><code>    jmap [ option ] pid
+    jmap [ option ] executable core
+    jmap [ option ] [server-id@]remote-hostname-or-IP</code></pre>
+<ul>
+<li><no option> 没有可选项时，会输出所有共享的对象映射。 开始地址，映射大小，全路径。 直接 jmap pid得到如下结果：</li>
+</ul>
+<pre><code>0x08048000     46K  /work/ProgramFiles/jdk1.6.0_14/bin/java
+0xb6763000     74K  /work/ProgramFiles/jdk1.6.0_14/jre/lib/i386/libzip.so
+0xb6774000     41K  /lib/tls/i686/cmov/libnss_files-2.9.so
+0xb6780000     37K  /lib/tls/i686/cmov/libnss_nis-2.9.so
+0xb678b000     29K  /lib/tls/i686/cmov/libnss_compat-2.9.so</code></pre>
+<p>以上是是加载的文件的信息。</p>
+<ul>
+<li>heap选项 jmap -heap pid : 查看堆的配置和大当前各个区块的使用情况，如伊甸区、老年代，永久代。可以用此来判断内存目前的使用情况以及垃圾回收情况： jmap -heap pid,得到如下结果：</li>
+</ul>
+<pre><code>   Heap Configuration:  
+  
+   MinHeapFreeRatio = 40  
+  
+   MaxHeapFreeRatio = 70  
+  
+   MaxHeapSize      = 859832320 (820.0MB)  
+  
+   NewSize          = 1048576 (1.0MB)  
+  
+   MaxNewSize       = 4294901760 (4095.9375MB)  
+  
+   OldSize          = 4194304 (4.0MB)  
+  
+   NewRatio         = 8  
+  
+   SurvivorRatio    = 8  
+  
+   PermSize         = 16777216 (16.0MB)  
+  
+   MaxPermSize      = 67108864 (64.0MB)  
+  
+  
+Heap Usage:  
+  
+PS Young Generation  
+  
+Eden Space:  
+  
+   capacity = 9043968 (8.625MB)  
+  
+   used     = 6820384 (6.504425048828125MB)  
+  
+   free     = 2223584 (2.120574951171875MB)  
+  
+   75.41362375452898% used  
+  
+From Space:  
+  
+   capacity = 720896 (0.6875MB)  
+  
+   used     = 704680 (0.6720352172851562MB)  
+  
+   free     = 16216 (0.01546478271484375MB)  
+  
+   97.7505770596591% used  
+  
+To Space:  
+  
+   capacity = 720896 (0.6875MB)  
+  
+   used     = 0 (0.0MB)  
+  
+   free     = 720896 (0.6875MB)  
+  
+   0.0% used  
+  
+PS Old Generation  
+  
+   capacity = 47710208 (45.5MB)  
+  
+   used     = 589184 (0.5618896484375MB)  
+  
+   free     = 47121024 (44.9381103515625MB)  
+  
+   1.2349223042582418% used  
+  
+PS Perm Generation  
+  
+   capacity = 16777216 (16.0MB)  
+  
+   used     = 5179648 (4.939697265625MB)  
+  
+   free     = 11597568 (11.060302734375MB)  
+  
+   30.87310791015625% used  </code></pre>
+<ul>
+<li>histo 选项 内存使用的柱状图，包含每个类，对象使用的内存大小。 VM 内部的类名以 * 前缀开头。</li>
+</ul>
+<pre><code>num     #instances         #bytes  class name  
+  
+---------------------------------------------  
+  
+  1:         57195        5639792  [C  
+  
+  2:         34680        3991104  &lt;constMethodKlass&gt;  
+  
+  3:         34680        2779112  &lt;methodKlass&gt;  
+  
+  4:         52947        2340272  &lt;symbolKlass&gt;  
+  
+  5:          3024        1641744  &lt;constantPoolKlass&gt;  
+  
+  6:          5182        1618040  [B  
+  
+  7:          3024        1290544  &lt;instanceKlassKlass&gt;  
+  
+  8:         12134        1267696  [I  
+  
+  9:         44622        1070928  java.lang.String  
+  
+ 10:          2565         994128  &lt;constantPoolCacheKlass&gt;  
+  
+ ………………  
+</code></pre>
+<ul>
+<li>permstat 选项 输出所有类装载器在堆里产生的对象 包括每个装载器的名字，活跃，地址，父装载器，和其总共加载的类大小。</li>
+</ul>
+<pre><code>jmap -permstat pid
+
+class_loader    classes     bytes        parent_loader alive?        type  
+  
+  
+&lt;bootstrap&gt;     1102         4283352    null     live   &lt;internal&gt;  
+  
+0x80753d50     1       1992           null     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0x8034d9e0     8       32272         null     live   sun/misc/Launcher$ExtClassLoader@0x7c432400  
+  
+0x8095a4e0     1       1784         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0xadc25868     1       1784         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0xaebf74c0      1       1784         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0xadc2b5c8      1       1784         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0x808cd448     1       1768         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0x80758288     1       1768         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0x80959e80     1       1784         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0x80756248     1       1768         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  
+  
+0x808e6ae8     1       1784         0x8034d998     dead         sun/reflect/DelegatingClassLoader@0x7c2e6c28  </code></pre>
+<ul>
+<li>内存dump 除了直接通过jmap查看内存里各种对象存活情况，也可以直接对整个内存映像dump，再通过工具(jmat)查看。 如：</li>
+</ul>
+<pre><code>jmap -dump:live,format=b,file=heap.bin pid（注意 加了live参数，会触发fullgc，只dump存活的对象，不加live参数则不会。）</code></pre>
+<h2 id="jstack">3.jstack</h2>
+<p>排查疑难问题非常有用的一个命令。 为指定的线程输出 java 的线程堆栈信息，包括了进程里的所有线程，是一种最直观的了解当前jvm工作状态的命令。 每一个线程 frame ，包括类全名，方法名，代码行。</p>
+<p>java.lang.Thread.State ： RUNNABLE BLOCKED TIMED_WATTING(sleep 后会进入这种状态 )（如果是 BLOCKED 状态就要注意了，看看 blocked 的状态在等待什么？因为什么而阻塞？）最常见的情况是线程在等待网络的读写，比如当网络数据没有准备好读时，线程处于这种等待状态，而一旦有数据准备好读之后，线程会重新激活，读取并处理数据。</p>
+<p>在线程中，有一些 JVM 内部的后台线程，来执行譬如垃圾回收，或者低内存的检测等等任务，这些线程往往在 JVM 初始化的时候就存在，如下：</p>
+<pre><code>&quot;Low Memory Detector&quot; daemon prio=10 tid=0x081465f8 nid=0x7 runnable [0x00000000..0x00000000]
+&quot;CompilerThread0&quot; daemon prio=10 tid=0x08143c58 nid=0x6 waiting on condition [0x00000000..0xfb5fd798]
+&quot;Signal Dispatcher&quot; daemon prio=10 tid=0x08142f08 nid=0x5 waiting on condition [0x00000000..0x00000000]
+&quot;Finalizer&quot; daemon prio=10 tid=0x08137ca0 nid=0x4 in Object.wait() [0xfbeed000..0xfbeeddb8]</code></pre>
+<h2 id="jstat">4.jstat</h2>
+<ul>
+<li>描述 ：全称“Java Virtual Machine statistics monitoring tool”,用于对jvm进程的资源和性能等各方面情况实时监控的轻量级小工具。</li>
+<li>使用：</li>
+</ul>
+<pre><code>jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]</code></pre>
+<p>Options — 监控选项选项。如 -gcutil 查看gc情况，class查看类装载情况。</p>
+<blockquote>
+<p>Option Displays...</p>
+</blockquote>
+<blockquote>
+<p>class Statistics on the behavior of the class loader.</p>
+</blockquote>
+<blockquote>
+<p>compiler Statistics of the behavior of the HotSpot Just-in-Time compiler.</p>
+</blockquote>
+<blockquote>
+<p>gc Statistics of the behavior of the garbage collected heap.</p>
+</blockquote>
+<blockquote>
+<p>gccapacity Statistics of the capacities of the generations and their corresponding spaces.</p>
+</blockquote>
+<blockquote>
+<p>gccause Summary of garbage collection statistics (same as -gcutil), with the cause of the last and current (if applicable) garbage collection events.</p>
+</blockquote>
+<blockquote>
+<p>gcnew Statistics of the behavior of the new generation.</p>
+</blockquote>
+<blockquote>
+<p>gcnewcapacity Statistics of the sizes of the new generations and its corresponding spaces.</p>
+</blockquote>
+<blockquote>
+<p>gcold Statistics of the behavior of the old and permanent generations.</p>
+</blockquote>
+<blockquote>
+<p>gcoldcapacity Statistics of the sizes of the old generation.</p>
+</blockquote>
+<blockquote>
+<p>gcpermcapacity Statistics of the sizes of the permanent generation.</p>
+</blockquote>
+<blockquote>
+<p>gcutil Summary of garbage collection statistics.</p>
+</blockquote>
+<blockquote>
+<p>printcompilation HotSpot compilation method statistics.</p>
+</blockquote>
+<p>vmid — java进程号</p>
+<p>interval– 采样间隔时间，单位为毫秒</p>
+<p>count — 打印次数，如果缺省则打印无数次</p>
+<ul>
+<li>示例 sample1. gc情况监控 命令：</li>
+</ul>
+<pre><code>jstat -gcutil 1881 3000 10</code></pre>
+<p>命令输出：</p>
+<pre><code>  S0     S1     E      O      P     YGC     YGCT    FGC    FGCT     GCT   
+  0.00  99.86  51.79  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  51.90  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  52.01  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  52.33  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  52.45  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  52.55  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  52.71  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  53.53  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  53.63  48.14  99.92     71    3.203     1    0.040    3.243
+  0.00  99.86  53.80  48.14  99.92     71    3.203     1    0.040    3.243</code></pre>
+<p>以上每一列的说明：</p>
+<p>S0 — Heap上的 Survivor space 0 区已使用空间的百分比</p>
+<p>S1 — Heap上的 Survivor space 1 区已使用空间的百分比</p>
+<p>E — Heap上的 Eden space 区已使用空间的百分比</p>
+<p>O — Heap上的 Old space 区已使用空间的百分比</p>
+<p>P — Perm space 区已使用空间的百分比</p>
+<p>YGC — 从应用程序启动到采样时发生 Young GC 的次数</p>
+<p>YGCT– 从应用程序启动到采样时 Young GC 所用的时间(单位秒)</p>
+<p>FGC — 从应用程序启动到采样时发生 Full GC 的次数</p>
+<p>FGCT– 从应用程序启动到采样时 Full GC 所用的时间(单位秒)</p>
+<p>GCT — 从应用程序启动到采样时用于垃圾回收的总时间(单位秒)</p>
+<p>sample2. 类加载情况监控 命令：</p>
+<pre><code>jstat -class 1881 3000 10</code></pre>
+<p>命令输出</p>
+<pre><code>Loaded  Bytes  Unloaded  Bytes     Time   
+ 18302 38220.0        0     0.0      41.74
+ 18302 38220.0        0     0.0      41.74
+ 18308 38228.3        0     0.0      41.75
+ 18308 38228.3        0     0.0      41.75
+ 18308 38228.3        0     0.0      41.75</code></pre>
+</body>
+</html>
