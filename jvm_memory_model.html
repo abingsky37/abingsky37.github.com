@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>【JVM】HotSpot JVM内存管理和GC策略总结</title>
+  <meta name="description" content="JVM的相关知识是学习java高级特性必须要去深入学习的。平时也有一些学习和实践，不过总结比较少。  今天有时间总结一下最基础的内存模型和GC策略的..." />
+  <meta name="keywords" content="JVM, JMM, GC, jvm 参数, CMS 【JVM】HotSpot JVM内存管理和GC策略总结" />
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<p><a href="http://abingsky37.github.io">回主页</a></p>
+<h1 id="jvmhotspot-jvm内存管理和gc策略总结">【JVM】HotSpot JVM内存管理和GC策略总结</h1>
+<hr />
+<p>JVM的相关知识是学习java高级特性必须要去深入学习的。平时也有一些学习和实践，不过总结比较少。 今天有时间总结一下最基础的内存模型和GC策略的知识，在此记录一下。</p>
+<h2 id="hotspot-jvm内存模型">hotspot jvm内存模型</h2>
+<h3 id="内存模型">1.内存模型</h3>
+<p>hotspot的内存模型很多地方都有类似总结,我也简单总结了一下，大概可以用下图表示：</p>
+<p>关于几个分区的描述定义:</p>
+<div class="figure">
+<img src="images/hotspot_jvm.jpg" alt="jvm 内存模型" /><p class="caption">jvm 内存模型</p>
+</div>
+<ol style="list-style-type: decimal">
+<li><p>线程栈：线程创建是会为每个线程创建一个线程栈，线程栈里面会为每个方法调用创建一个栈帧。主要用于保存线程的当前运行状态。</p></li>
+<li><p>堆：用于存放运行时中生成的新对像。会划分成新生代和老年代。新生代里面又划分成了eden区、存活1区和存活2区。</p></li>
+<li><p>永久区：方法和常量区，用于存放方法字节码元数据和各种常量。</p></li>
+</ol>
+<p>为什么堆会划分为新生代和老年代？</p>
+<p>基本原理：对于大部分应用，常驻对象不多。因为大部分存活寿命不长，新生代和老年代的划分有利于区分对待和缩小垃圾回收范围。（Most allocated objects are not referenced (considered live) for long, that is, they die young. Few references from older to younger objects exist.）</p>
+<h3 id="内存相关启动参数">2.内存相关启动参数</h3>
+内存相关常见jvm参数
+<table>
+<tr>
+<td> 
+参数
+</td> <td> 
+含义
+</td> 
+</tr>
+<tr>
+<td> 
+-Xms
+</td> <td>
+最小堆空间
+</td> 
+</tr>
+<tr>
+<td> 
+-Xmx
+</td><td>
+最大堆空间
+</td> 
+</tr>
+<tr>
+<td> 
+-Xss
+</td><td>
+新生代空间
+</td>
+</tr>
+<tr>
+<td>
+-XX:PermSize=xxx
+</td><td>
+永久代空间
+</td>
+<tr>
+</tr>
+<td> 
+-XX:MaxPermSize=xxx
+</td><td>
+最大永久代空间
+</td>
+</tr>
+<tr>
+<td> 
+-XX:SurviorRatio=xxx
+</td><td> 
+代表eden:s0的比例
+</td>
+</tr.>
+<tr>
+<td> 
+-XX:NewRatio=xx
+</td><td> 
+新生代和旧生代的比例.
+</td>
+</tr>
+<tr>
+<td> 
+-XX:MaxTenuringThreshold
+</td><td>
+在新生代最大存活次数
+</td>
+</tr>
+</table>
+    
+<h2 id="hotspot-内存垃圾回收策略总结">hotspot 内存垃圾回收策略总结</h2>
+<h3 id="内存回收策略和常见概念">1.内存回收策略和常见概念</h3>
+<p>常见内存回收策略可以从以下几个维度来理解：</p>
+<h4 id="串行并行">1.1 串行&amp;并行</h4>
+<p><em>串行</em>：单线程执行内存回收工作。十分简单，无需考虑同步等问题，但耗时较长，不适合多cpu。</p>
+<p><em>并行</em>：多线程并发进行回收工作。适合多CPU，效率高。</p>
+<h4 id="并发-stop-the-world">1.2 并发&amp; stop the world</h4>
+<p>stop the world：jvm里的应用线程会挂起，只有垃圾回收线程在工作进行垃圾清理工作。简单，无需考虑回收不干净等问题。</p>
+<p>并发：在垃圾回收的同时，应用也在跑。保证应用的响应时间。会存在回收不干净需要二次回收的情况。</p>
+<h4 id="压缩非压缩copy">1.3 压缩&amp;非压缩&amp;copy</h4>
+<p><em>压缩</em>：在进行垃圾回收后，会通过滑动，把存活对象滑动到连续的空间里，清理碎片，保证剩余的空间是连续的。 非压缩：保留碎片，不进行压缩。</p>
+<p><em>copy</em>：将存活对象移到新空间，老空间全部释放。（需要较大的内存。）</p>
+<p>一个垃圾回收算法，可以从上面几个维度来考虑和设计，而最终产生拥有不同特性适合不同场景的垃圾回收器。</p>
+<h3 id="hotspot-jvm的ygcfgc">2.HotSpot JVM的YGC&amp;FGC</h3>
+<p><em>YGC</em> ：对新生代堆进行GC。频率比较高，因为大部分对象的存活寿命较短，在新生代里被回收。性能耗费较小。</p>
+<p><em>FGC</em> ：全堆范围的GC。默认堆空间使用到达80%(可调整)的时候会触发FGC。以我们生产环境为例，一般比较少会触发FGC，有时10天或一周左右会有一次。</p>
+<h3 id="常见gc算法和jvm参数">3.常见GC算法和jvm参数</h3>
+<h4 id="串行垃圾收集器">3.1.串行垃圾收集器</h4>
+<p>新生代和老生代因为结构划分不一样，其串行收集器算法也不一样</p>
+<p>新生代串行收集器采用stop the world策略，步骤大概是：先从eden区扫描，把存活的对象拷贝到to区，如果to区放不下的对象直接拷贝到old区。再从from区扫描存活对象，如果对象存活次数超过阀值的就移到老年区，其他的移到to区。做完之后from和to区概念互换(from和to只是运行时的概念，其实就对应存活1区和存活2区)。</p>
+<p>图形的表示如下：</p>
+<p>回收前：</p>
+<div class="figure">
+<img src="images/before-gc.jpg" alt="回收前" /><p class="caption">回收前</p>
+</div>
+<p>回收后：</p>
+<div class="figure">
+<img src="images/after-gc.jpg" alt="回收后" /><p class="caption">回收后</p>
+</div>
+<p>老生代串行收集器,老生代垃圾回收主要分为三个阶段 Mark-sweep-compact</p>
+<p><em>Mark ：识别哪些是存活的</em></p>
+<p><em>Sweep : 识别垃圾，并回收</em></p>
+<p><em>Compact ：滑动活动对象并压缩到连续空间，碎片整理。</em></p>
+<p>串行垃圾回收器在jvm client模式下是默认启动的。参数 -XX:+UseSerialGC 可以设置垃圾回收策略为串行。</p>
+<h4 id="并行垃圾回收器">3.2并行垃圾回收器</h4>
+<p>主要以下特点：</p>
+<p><em>充分利用CPU</em></p>
+<p><em>吞吐量优先</em></p>
+<p><em>和串行一样，不过是多线程执行，缩短了stop-the-world时间</em></p>
+<p>-server模式下默认的回收器。参数 -XX:+UseParallelGC 可以设置垃圾回收策略为并行。</p>
+<h4 id="并行压缩收集器parallel-compacting-collector">3.3并行压缩收集器（Parallel Compacting Collector）</h4>
+<p>只对老生代适用，新生代仍旧和并行垃圾回收器一样。</p>
+<p>其过程大概如下：</p>
+<p>标记阶段 ，使用多线程对存在引用的对象进行并行标记。</p>
+<p>分析阶段 ，GC对各个区域进行分析，GC认为，在经过上次GC后，越左边的区域，有引用的对象密度要远远大于右边的区域。所以就从左往右分析，当某个区域的密度达到一个值的时候，就认为这是一个临界区域，所以这个临界区域左边的区域，将不会进行压缩，而右边的区域，则会进行压缩。</p>
+<p>压缩阶段 ，多各个需要压缩的区域进行并行压缩</p>
+<p>参数-XX:+UseParallelOldGC 可以设置老生代垃圾回收策略为并行压缩。</p>
+<h4 id="concurrent-mark-sweep-cms-collector">3.4 Concurrent Mark-Sweep (CMS) Collector</h4>
+<p>主要特点:</p>
+<p><em>仍旧是老生代适用。</em></p>
+<p><em>减少停顿，以响应时间为优先。</em></p>
+<p><em>只有标记和清除，不会进行会压缩。</em></p>
+<p><em>初始标记和清除支持和应用程序并发执行，中间还是会有一re-mark需要stop the world。</em></p>
+<p>参数-XX:+UseConcMarkSweepGC 可以设置老生代垃圾回收策略为CMS。</p>
+<h4 id="g1垃圾收集器">3.5 G1垃圾收集器</h4>
+<p>是在JDK7里支持的，用于取代CMS。具体具体见：<a href="http://docs.oracle.com/javase/7/docs/technotes/guides/vm/G1.html">http://docs.oracle.com/javase/7/docs/technotes/guides/vm/G1.html</a></p>
+<h2 id="总结">总结</h2>
+<p>本文的内容只是仅限于基础层面的的一些知识总结，更加深入的知识点还需要后续深入学习。</p>
+<p>以下提供一些学习参考：</p>
+<p><a href="http://java.sun.com/j2se/reference/whitepapers/memorymanagement_whitepaper.pdf">memory management whitepaper</a></p>
+<p><a href="http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html">JVM option</a></p>
+<p><a href="http://blog.bluedavy.com/?p=200">blue davy的一个jmm分享</a></p>
+</body>
+</html>
