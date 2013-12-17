@@ -41,7 +41,7 @@ code > span.er { font-weight: bold; }
 </ol>
 <p>那么想象中设计一个线程池就需要有线程池大小、线程生命周期管理、等待队列等等功能，下面结合代码看看原理。 Excutor 整体结构如下：</p>
 <div class="figure">
-<img src="images/executor.jpg" alt="回收前" /><p class="caption">回收前</p>
+<img src="images/executor.jpg" alt="executor框架代码结构" /><p class="caption">回收前</p>
 </div>
 <p>Executor 接口定义了最基本的 execute 方法，用于接收用户提交任务。 ExecutorService 定义了线程池终止和创建及提交 futureTask 任务支持的方法。</p>
 <p>AbstractExecutorService 是抽象类，主要实现了 ExecutorService 和 futureTask 相关的一些任务创建和提交的方法。</p>
