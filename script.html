@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>几个shell脚本</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #2a211c; color: #bdae9d; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #2a211c; color: #bdae9d; border-right: 1px solid #bdae9d; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #bdae9d; background-color: #2a211c; }
+code > span.kw { color: #43a8ed; font-weight: bold; }
+code > span.dt { text-decoration: underline; }
+code > span.dv { color: #44aa43; }
+code > span.bn { color: #44aa43; }
+code > span.fl { color: #44aa43; }
+code > span.ch { color: #049b0a; }
+code > span.st { color: #049b0a; }
+code > span.co { color: #0066ff; font-style: italic; }
+code > span.al { color: #ffff00; }
+code > span.fu { color: #ff9358; font-weight: bold; }
+code > span.er { font-weight: bold; }
+  </style>
+</head>
+<body>
+<p><a href="http://abingsky37.github.io">回主页</a></p>
+<h1 id="linux几个shell脚本">【linux】几个shell脚本</h1>
+<hr />
+<h3 id="批量执行java任务">1.批量执行java任务</h3>
+<p><strong>使用场景</strong>：当有多个java任务需要有序运行时，比如要做一组实验，每组实验的入参不一样。可以写一个java任务的列表，再由shell脚本逐个执行。</p>
+<p><strong>原理</strong>：通过shell里轮询判断当前任务是否完成，如果完成执行下一个任务。</p>
+<p><strong>使用方式</strong>： ./runBatch.sh tasklist</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/bash  </span>
+<span class="co">#####根据一个java任务列表，串行的执行一系列的java任务#####</span>
+<span class="kw">if [</span> <span class="st">&quot;</span><span class="ot">$1</span><span class="st">&quot;</span> <span class="ot">=</span> <span class="st">&quot;&quot;</span><span class="kw"> ]</span> ; <span class="kw">then</span>  
+   <span class="kw">echo</span> <span class="st">&quot;Bad command. No tasklist file been appointed. Right format: </span><span class="ot">$0</span><span class="st"> [tasklist.txt]&quot;</span>  
+   <span class="kw">exit</span> 1  
+<span class="kw">fi</span>  
+<span class="ot">tasks=</span><span class="kw">`cat</span> <span class="ot">$1</span><span class="kw">|wc</span> -l<span class="kw">`</span>  
+<span class="kw">echo</span> <span class="st">&quot;total tasks founded:</span><span class="ot">$tasks</span><span class="st">&quot;</span>  
+<span class="kw">echo</span> <span class="st">&quot;Now begin running.....&quot;</span>  
+<span class="kw">cat</span> <span class="ot">$1</span><span class="kw">|while</span> <span class="kw">read</span> <span class="ot">line</span>  
+<span class="kw">do</span>  
+<span class="ot">tasks=</span><span class="kw">`jps|wc</span> -l<span class="kw">`</span>
+<span class="co">#轮询  </span>
+<span class="kw">while [</span> <span class="ot">$tasks</span> <span class="ot">-gt</span> 1<span class="kw"> ]</span>  
+  <span class="kw">do</span>  
+    <span class="kw">sleep</span> 20  
+        <span class="kw">echo</span> <span class="st">&quot;task is running&quot;</span>  
+    <span class="ot">tasks=</span><span class="kw">`jps|wc</span> -l<span class="kw">`</span>  
+  <span class="kw">done</span>  
+<span class="ot">$line</span> <span class="kw">&amp;</span>  
+<span class="kw">echo</span> <span class="st">&quot;running </span><span class="ot">$line</span><span class="st">&quot;</span>  
+<span class="kw">sleep</span> 5  
+<span class="kw">done</span>  
+<span class="kw">echo</span> <span class="st">&quot;end.&quot;</span></code></pre>
+<h3 id="cookielog-统计">2.cookielog 统计</h3>
+<p>分析cookielog,统计出某ip访问某URL最频繁的列表等。</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/bash</span>
+<span class="co">####分析cookielog,统计出某ip访问某URL最频繁的列表，倒序排#####</span>
+<span class="kw">if [</span> <span class="st">&quot;</span><span class="ot">$1</span><span class="st">&quot;</span> <span class="ot">=</span> <span class="st">&quot;&quot;</span><span class="kw"> ]</span> ; <span class="kw">then</span>
+   <span class="kw">echo</span> <span class="st">&quot;Bad command. No cookie file been appointed. Right format: </span><span class="ot">$0</span><span class="st"> [cookie_file] [output_file]&quot;</span>
+   <span class="kw">exit</span> 1
+<span class="kw">fi</span>
+<span class="kw">awk</span> <span class="st">&#39;{print $1  $8}&#39;</span> <span class="ot">$1</span><span class="kw">|</span> <span class="kw">awk</span> -F <span class="st">&quot;?&quot;</span> <span class="st">&#39;{print $1}&#39;</span><span class="kw">|sort|uniq</span> -c<span class="kw">|sort</span> -nro <span class="ot">$2</span>
+<span class="kw">exit</span> 0</code></pre>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/bash</span>
+<span class="kw">if [</span> <span class="st">&quot;</span><span class="ot">$1</span><span class="st">&quot;</span> <span class="ot">=</span> <span class="st">&quot;&quot;</span><span class="kw"> ]</span> ; <span class="kw">then</span>
+   <span class="kw">echo</span> <span class="st">&quot;Bad command. No cookie file been appointed. Right format: </span><span class="ot">$0</span><span class="st"> [cookie_file] [output_file]&quot;</span>
+   <span class="kw">exit</span> 1
+<span class="kw">fi</span>
+<span class="kw">awk</span> -F <span class="st">&quot;</span><span class="dt">\&quot;</span><span class="st">&quot;</span> <span class="st">&#39;{print $2}&#39;</span> <span class="ot">$1</span> <span class="kw">|</span> <span class="kw">awk</span> <span class="st">&#39;{print $2}&#39;</span> <span class="kw">|</span> <span class="kw">awk</span> -F <span class="st">&quot;?&quot;</span> <span class="st">&#39;{print $1}&#39;</span><span class="kw">|sort|uniq</span> -c<span class="kw">|sort</span> -dro <span class="ot">$2</span>
+<span class="kw">exit</span> 0</code></pre>
+<h3 id="批量修改文件">3.批量修改文件</h3>
+<p><strong>使用场景</strong>：代码重构是往往会有一些需求批量往一批文件的某个特定位置插入一段代码或替换一段代码。</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co">#!/bin/bash</span>
+<span class="co">###将每个tmp2文件列表里每个类文件import区域里加入&quot;import org.springframework.stereotype.Component;&quot;，类头加上注解&quot;@Component&quot;</span>
+<span class="kw">cat</span> tmp2<span class="kw">|while</span> <span class="kw">read</span> <span class="ot">line</span>
+<span class="kw">do</span>
+<span class="kw">if</span> <span class="kw">grep</span> <span class="st">&quot;@Component&quot;</span> <span class="ot">$line</span> 
+<span class="kw">then</span>
+<span class="kw">echo</span> <span class="st">&quot;</span><span class="ot">$line</span><span class="st"> has add @component&quot;</span>
+<span class="kw">else</span>
+<span class="ot">n1=</span><span class="kw">`grep</span> -n <span class="st">&quot;import\s&quot;</span> <span class="ot">$line</span><span class="kw">|tail</span> -1<span class="kw">|awk</span> -F <span class="st">&quot;:&quot;</span> <span class="st">&#39;{print $1}&#39;</span><span class="kw">`</span>
+<span class="ot">n2=</span>$[ <span class="ot">$n1</span> <span class="kw">+</span> 1 ]
+<span class="kw">echo</span> <span class="ot">$n2</span>
+<span class="kw">gsed</span> -i <span class="st">&#39;&#39;</span><span class="ot">$n2</span><span class="st">&#39;i import org.springframework.stereotype.Component;&#39;</span> <span class="ot">$line</span>
+<span class="ot">n3=</span><span class="kw">`grep</span> -n <span class="st">&quot;public\sclass&quot;</span> <span class="ot">$line</span><span class="kw">|head</span> -1<span class="kw">|awk</span> -F <span class="st">&quot;:&quot;</span> <span class="st">&#39;{print $1}&#39;</span><span class="kw">`</span>
+<span class="kw">gsed</span> -i <span class="st">&#39;&#39;</span><span class="ot">$n3</span><span class="st">&#39;i @Component&#39;</span> <span class="ot">$line</span>
+<span class="kw">fi</span>
+<span class="kw">done</span></code></pre>
+</body>
+</html>
