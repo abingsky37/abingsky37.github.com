@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>ruby对象模型</title>
+  <meta name="description" content="ruby底层对象模型" />
+  <meta name="keywords" content="ruby, EigenClass, Object Model, Class architecture" />
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #2a211c; color: #bdae9d; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #2a211c; color: #bdae9d; border-right: 1px solid #bdae9d; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #bdae9d; background-color: #2a211c; }
+code > span.kw { color: #43a8ed; font-weight: bold; }
+code > span.dt { text-decoration: underline; }
+code > span.dv { color: #44aa43; }
+code > span.bn { color: #44aa43; }
+code > span.fl { color: #44aa43; }
+code > span.ch { color: #049b0a; }
+code > span.st { color: #049b0a; }
+code > span.co { color: #0066ff; font-style: italic; }
+code > span.al { color: #ffff00; }
+code > span.fu { color: #ff9358; font-weight: bold; }
+code > span.er { font-weight: bold; }
+  </style>
+</head>
+<body>
+<p><a href="http://abingsky37.github.io">回主页</a></p>
+<h2 id="ruby对象模型">ruby对象模型</h2>
+<hr />
+<p>看了下ruby元编程，大致了解了下ruby底层的对象模型。</p>
+<p>先看一下代码示例:</p>
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Bird</span>  
+    <span class="ot">@@legs</span>=<span class="dv">2</span>  
+      
+    <span class="kw">def</span> eat  
+       puts <span class="st">&quot;i am eating&quot;</span>  
+    <span class="kw">end</span>  
+  
+    <span class="kw">def</span> comefrom(location)  
+       <span class="ot">@birthplace</span>=location  
+       puts <span class="st">&quot;i am come from </span><span class="ot">#{@birthplace}</span><span class="st">,i have </span><span class="ot">#{@@legs}</span><span class="st"> legs. &quot;</span>  
+    <span class="kw">end</span>  
+<span class="kw">end</span>  
+  
+<span class="kw">class</span> <span class="dt">Crow</span> &lt; <span class="dt">Bird</span>  
+    <span class="ot">@plumecolor</span>=<span class="st">&quot;black&quot;</span>  
+      
+    <span class="kw">def</span> peck  
+       puts <span class="st">&quot;i am pecking. color is :</span><span class="ot">#{@plumecolor}</span><span class="st">&quot;</span>  
+    <span class="kw">end</span>  
+      
+    <span class="kw">def</span> <span class="dv">self</span>.showcolor  
+        puts <span class="st">&quot;plume color is:</span><span class="ot">#{@plumecolor}</span><span class="st">,i have </span><span class="ot">#{@@legs}</span><span class="st"> legs.&quot;</span>  
+        <span class="ot">@plumecolor</span>  
+    <span class="kw">end</span>  
+<span class="kw">end</span>  
+  
+bird=<span class="dt">Bird</span>.new  
+crow1=<span class="dt">Crow</span>.new  
+crow2=<span class="dt">Crow</span>.new  
+<span class="kw">def</span> crow2.speaking  
+   <span class="ot">@canspeak</span>=<span class="dv">true</span>  
+   puts <span class="st">&quot;im speaking&quot;</span>  
+<span class="kw">end</span>  
+bird.eat  
+crow1.peck  
+crow2.speaking  
+<span class="co">#crow1.speaking  </span>
+puts <span class="st">&quot;Crow&#39;s color </span><span class="ot">#{</span><span class="dt">Crow</span>.showcolor<span class="ot">}</span><span class="st">&quot;</span>  
+crow2.comefrom(<span class="st">&quot;north&quot;</span>)  
+bird.comefrom(<span class="st">&quot;north&quot;</span>) </code></pre>
+<p>执行结果：</p>
+<pre class="txt"><code>i am eating
+i am pecking. color is :
+im speaking
+plume color is:black,i have 2 legs.
+Crow&#39;s color black
+i am come from north,i have 2 legs. 
+i am come from north,i have 2 legs. </code></pre>
+<p>代码说明：</p>
+<h4 id="定义了两个类bird和crowcrow继承了bird">1. 定义了两个类，Bird和Crow，Crow继承了Bird</h4>
+<h4 id="定义了几个不同的变量实例变量类实例变量类变量birthplace属于实例变量plumecolor属于类实例变量legs属于类变量从示例可以看出实例可以访问实例变量和类变量访问不了类实例变量.">2. 定义了几个不同的变量，实例变量、类实例变量、类变量。<span class="citation">@birthplace属于实例变量</span>。<span class="citation">@plumecolor属于类实例变量</span>。@<span class="citation">@legs属于类变量</span>。从示例可以看出，实例可以访问实例变量和类变量，访问不了类实例变量.</h4>
+<h4 id="crow2和crow1都属于类crow的对象实例但是crow2比crow1多一个方法叫speaking这个方法属于单件方法存储在对象的eigenclass中">3. crow2和crow1都属于类Crow的对象实例，但是crow2比crow1多一个方法叫speaking。这个方法属于单件方法，存储在对象的eigenclass中。</h4>
+<p>基于以上代码说明，画下以上代码的底层对象模型:</p>
+<div class="figure">
+<img src="images/ruby_objectmodel.jpg" alt="ruby object model" /><p class="caption">ruby object model</p>
+</div>
+<p>说明：</p>
+<p><strong>C代表所属类的意思，左边是对象右边是类。</strong></p>
+<p><strong>S代表父子类的意思，下面是子类上边是父类。</strong></p>
+<p>从对象模型图可以看出：</p>
+<ol style="list-style-type: decimal">
+<li><p>类本身也是一个对象，该对象所属的类是一个EigenClass。</p></li>
+<li><p>类的集成结构，又体现了EigenClass的集成结构。</p></li>
+<li><p>EigenClass继承自Class</p></li>
+<li><p>ruby对象的方法查找路径是先向右一步，再往上查，随类实例的方法和实例的方法是隔离的。如crow2的方法一定在#crow2、Crow、Bird、Object、BaseObject里依次查找。而对象Crow的方法一定在#Crow、#Bird、#Object、#BaseObject、Class里依次查找。</p></li>
+</ol>
+</body>
+</html>
