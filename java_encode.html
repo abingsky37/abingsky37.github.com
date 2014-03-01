@@ -25,8 +25,39 @@ code > span.al { color: #ffff00; }
 code > span.fu { color: #ff9358; font-weight: bold; }
 code > span.er { font-weight: bold; }
   </style>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+      
+      <style type="text/css">
+          
+          body {
+              padding-top: 50px;
+          }
+      
+          </style>
 </head>
 <body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">abingsky37.github.io</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="index.html">我的主页</a></li>
+                    <li><a href="about.html">关于我</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+</div>
+<div class="container">
+    
 <p><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/></p>
 <p><a href="http://abingsky37.github.io">回主页</a></p>
 <h2 id="java内部字符编码浅析">java编译执行过程字符编码浅析</h2>
@@ -71,5 +102,6 @@ test=?? </code></pre>
 <p>从上图可以理解不管采用那种格式的源文件，只要正确告诉编译器，编译器就会得到正确的结果。同时只要告诉JVM正确的输出流需要的编码格式，JVM总会返回正确编码格式的输出流。</p>
 <p>那么要想不产生乱码要注意两个环节： 1.告诉编译器你的源文件编码。 2.告诉jvm你显示或者构造字符串输出流时希望的编码。 尤其JSP乱码时要注意request请求采用的编码和解析request时候采用的编码是否一致,response的编码和html charset的编码是否一致。</p>
 <p>同时我们常遇到jsp、数据库等乱码问题可以找一下是否是以下两种原因： 1.误解型：a文件是GBK编码，但是你以为是UTF-8型编码，所以用UTF-8来理解它，就会出现乱码。 2.无能为力型：a文件时GBK编码，你也知道它是GBK编码，但是你想转换成ISO-8859-1的方式来显示，但是GBK里面有很多字符时ISO- 8859-1所不能解释的，这时也会出现乱码。</p>
+</div>
 </body>
 </html>

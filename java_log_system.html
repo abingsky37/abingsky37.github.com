@@ -27,8 +27,38 @@ code > span.al { color: #ffff00; }
 code > span.fu { color: #ff9358; font-weight: bold; }
 code > span.er { font-weight: bold; }
   </style>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+      
+      <style type="text/css">
+          
+          body {
+              padding-top: 50px;
+          }
+      </style>
 </head>
 <body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">abingsky37.github.io</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="index.html">我的主页</a></li>
+                    <li><a href="about.html">关于我</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+</div>
+<div class="container">
+
 <p><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/></p>
 <p><a href="http://abingsky37.github.io">回主页</a></p>
 <h1 id="java常见日志系统使用总结">java常见日志系统使用总结</h1>
@@ -86,5 +116,6 @@ code > span.er { font-weight: bold; }
 <p>使用日志配置的时候一定要明白需求，同时避免冲突。</p>
 <p>如使用SLF4j 的时候为了避免冲突，一定要保障只有一种实现类jar 包在里面。</p>
 <p>当遇到日志错乱等问题时，可以从这几个方面来排查</p>
+</div>
 </body>
 </html>
