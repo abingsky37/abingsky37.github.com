@@ -1,0 +1,162 @@
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Style-Type" content="text/css" />
+        <meta name="generator" content="pandoc" />
+        <title>juc Executor框架详解</title>
+        <meta name="description" content="juc executor 框架详解" />
+        <meta name="keywords" content="JUC,executor,threadpool,线程池,ThreadPoolExecutor" />
+        <style type="text/css">code{white-space: pre;}</style>
+        <style type="text/css">
+            table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+                margin: 0; padding: 0; vertical-align: baseline; border: none; }
+        table.sourceCode { width: 100%; line-height: 100%; background-color: #2a211c; color: #bdae9d; }
+        td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #2a211c; color: #bdae9d; border-right: 1px solid #bdae9d; }
+        td.sourceCode { padding-left: 5px; }
+        pre, code { color: #bdae9d; background-color: #2a211c; }
+        code > span.kw { color: #43a8ed; font-weight: bold; }
+        code > span.dt { text-decoration: underline; }
+        code > span.dv { color: #44aa43; }
+        code > span.bn { color: #44aa43; }
+        code > span.fl { color: #44aa43; }
+        code > span.ch { color: #049b0a; }
+        code > span.st { color: #049b0a; }
+        code > span.co { color: #0066ff; font-style: italic; }
+        code > span.al { color: #ffff00; }
+        code > span.fu { color: #ff9358; font-weight: bold; }
+        code > span.er { font-weight: bold; }
+            </style>
+        <style id="system" type="text/css">h1,h2,h3,h4,h5,h6,p,blockquote {    margin: 0;    padding: 0;}body {    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;    font-size: 13px;    line-height: 18px;    color: #737373;    margin: 10px 13px 10px 13px;}a {    color: #0069d6;}a:hover {    color: #0050a3;    text-decoration: none;}a img {    border: none;}p {    margin-bottom: 9px;}h1,h2,h3,h4,h5,h6 {    color: #404040;    line-height: 36px;}h1 {    margin-bottom: 18px;    font-size: 30px;}h2 {    font-size: 24px;}h3 {    font-size: 18px;}h4 {    font-size: 16px;}h5 {    font-size: 14px;}h6 {    font-size: 13px;}hr {    margin: 0 0 19px;    border: 0;    border-bottom: 1px solid #ccc;}blockquote {    padding: 13px 13px 21px 15px;    margin-bottom: 18px;    font-family:georgia,serif;    font-style: italic;}blockquote:before {    content:"C";    font-size:40px;    margin-left:-10px;    font-family:georgia,serif;    color:#eee;}blockquote p {    font-size: 14px;    font-weight: 300;    line-height: 18px;    margin-bottom: 0;    font-style: italic;}code, pre {    font-family: Monaco, Andale Mono, Courier New, monospace;}code {    background-color: #fee9cc;    color: rgba(0, 0, 0, 0.75);    padding: 1px 3px;    font-size: 12px;    -webkit-border-radius: 3px;    -moz-border-radius: 3px;    border-radius: 3px;}pre {    display: block;    padding: 14px;    margin: 0 0 18px;    line-height: 16px;    font-size: 11px;    border: 1px solid #d9d9d9;    white-space: pre-wrap;    word-wrap: break-word;}pre code {    background-color: #fff;    color:#737373;    font-size: 11px;    padding: 0;}@media screen and (min-width: 768px) {    body {        width: 748px;        margin:10px auto;    }}</style><style id="custom" type="text/css"></style>
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+            
+            <style type="text/css">
+                
+                body {
+                    padding-top: 50px;
+                }
+            </style>
+    </head>
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">abingsky37.github.io</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="index.html">我的主页</a></li>
+                        <li><a href="about.html">关于我</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </div>
+        
+        
+        
+<div class="container">
+       
+       <h3>Groovy 脚本变量引用自动化分析</h3>
+       <p>groovy因为其动态性经常被用来维护一些经常变化的业务规则，嵌入到应用中执行，达到可以灵活变更维护效果。
+       如如下脚本：
+       
+       </p>
+       <pre><code class="lang-java">if(order.containsAttribute("test"))
+           return "AFTER_PAY"
+           if(isCOD)
+           return "BEFORE_PAY"</code></pre>
+       <p>通过分析，可以得出以上脚本需要传入参数 <code>order</code>和<code>isCOD</code>.
+       使用以上脚本时会带来一个问题，调用者需要分析才可得出<code>order</code>和<code>isCOD</code>两个变量。
+       尤其对于一个长的规则脚本来说，人为分析更是麻烦且容易出错。如果能自动分析并得到结果会更好。
+       
+       </p>
+       <p>基于此研究了下groovy的AST树分析的vistor模式，可以实现自动分析出脚本里需要的信息。如变量应用。
+       
+       </p>
+       <h4>1.编写一个自定义的vistor</h4>
+       <pre><code class="lang-java">
+           import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
+           import org.codehaus.groovy.ast.DynamicVariable;
+           import org.codehaus.groovy.ast.expr.Expression;
+           import org.codehaus.groovy.ast.expr.MethodCallExpression;
+           import org.codehaus.groovy.ast.expr.VariableExpression;
+           import org.codehaus.groovy.control.SourceUnit;
+           
+           import java.util.HashSet;
+           import java.util.Set;
+           
+           /**
+           * @since 14-4-14
+           */
+           public class CustomGroovyVistor extends ClassCodeVisitorSupport {
+           
+           private Set&lt;String&gt; dynamicVariables = new HashSet&lt;String&gt;();
+           private Set&lt;String&gt; methodNames = new HashSet&lt;String&gt;();
+           
+           
+           /**覆写父类的方法，实现对变量节点的分析和记录**/
+           public void visitVariableExpression(VariableExpression expression) {    //变量表达式分析
+           super.visitVariableExpression(expression);
+           Expression e = expression.getInitialExpression();
+           if (expression.getAccessedVariable() instanceof DynamicVariable) {
+           dynamicVariables.add(expression.getName());
+           }
+           }
+           
+           public void visitMethodCallExpression(MethodCallExpression call) {
+           super.visitMethodCallExpression(call);
+           String methodName = call.getMethodAsString();
+           if (methodName != null &amp;&amp; methodName.startsWith("f_")) {
+           methodNames.add(call.getMethodAsString());
+           }
+           }
+           
+           @Override
+           protected SourceUnit getSourceUnit() {
+           return null;
+           }
+           
+           public Set&lt;String&gt; getDynamicVariables() {
+           return dynamicVariables;
+           }
+           
+           public void setDynamicVariables(Set&lt;String&gt; dynamicVariables) {
+           this.dynamicVariables = dynamicVariables;
+           }
+           
+           public Set&lt;String&gt; getMethodNames() {
+           return methodNames;
+           }
+           
+           public void setMethodNames(Set&lt;String&gt; methodNames) {
+           this.methodNames = methodNames;
+           }
+           }</code></pre>
+       <h4>2.构建使用AST 树Node，使用自定义vistor分析树</h4>
+       <pre><code class="lang-java">String script="..."
+           List&lt;ASTNode&gt; nodes = new AstBuilder().buildFromString(script);
+           CustomGroovyVistor variableScopeVisitor = new CustomGroovyVistor();
+           for (ASTNode node : nodes) {
+           node.visit(variableScopeVisitor);
+           }
+           for(String v:variableScopeVisitor.getDynamicVariables()){
+           System.out.println(v);
+           }</code></pre>
+       <p>以上结果即可得到该脚本的变量引用 
+       
+       
+       </p>
+</div>
+    </body>
+</html>
