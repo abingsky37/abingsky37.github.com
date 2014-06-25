@@ -122,6 +122,17 @@ code > span.er { font-weight: bold; }
 <span class="kw">gsed</span> -i <span class="st">&#39;&#39;</span><span class="ot">$n3</span><span class="st">&#39;i @Component&#39;</span> <span class="ot">$line</span>
 <span class="kw">fi</span>
 <span class="kw">done</span></code></pre>
+<h3 id="awk-分组求最大值平均值">4.awk 分组，求最大值、平均值</h3>
+<p>如输入：</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">A</span> 222
+    <span class="kw">B</span> 33
+    <span class="kw">C</span> 33
+    <span class="kw">A</span> 23
+    <span class="kw">D</span> 34
+    <span class="kw">B</span> 34</code></pre>
+<p>要求对第一列进行分类，得到第二列的平均值和最大值。 awk脚本如下：</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">awk</span> <span class="st">&#39;{A[$1]++;SUM[$1]+=$2;MAX[$1]=($2&gt;MAX[$1]?$2:MAX[$1])} </span>
+    <span class="st">END {for (service in A) print SUM[service]/A[service],service,MAX[service],A[service]}&#39;</span> file<span class="kw">|sort</span> -n</code></pre>
 </div>
 </body>
 </html>
